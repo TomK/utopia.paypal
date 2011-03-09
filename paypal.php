@@ -103,14 +103,14 @@ class PayPal extends uBasicModule {
 	private static $cvvAdded = false;
 	public static function DrawCVVField($v) {
 		if (!self::$cvvAdded) {
-			utopia::AppendVar('content','<div id="cvv2info" style="display:none;text-align:center;"><img src="'.utopia::GetRelativePath(dirname(__FILE__).'/cvv2.jpg').'" alt="" /></div>');
-			utopia::AppendVar('script_include', 'function openCVV() { $(\'#cvv2info\').dialog({autoOpen:false,modal:true,width:550,buttons:{"Close":function() { $(this).dialog("close"); }},position:["center",100],resizable:false,draggable:false,title:"Where do i find my CVV2?"}); $(\'#cvv2info\').dialog("open"); }');
+			self::$cvvAdded = true;
+			echo '<div id="cvv2info" style="display:none;text-align:center;"><img src="'.utopia::GetRelativePath(dirname(__FILE__).'/cvv2.jpg').'" alt="" /></div>';
+			uJavascript::AddText('function openCVV() { $(\'#cvv2info\').dialog({autoOpen:false,modal:true,width:550,buttons:{"Close":function() { $(this).dialog("close"); }},position:["center",100],resizable:false,draggable:false,title:"Where do i find my CVV2?"}); $(\'#cvv2info\').dialog("open"); }');
 		}
 		return '<a style="text-decoration:underline" href="javascript:openCVV()">CVV2?</a>';
 	}
 	public static function AddCVVField($module) {
 		CallModuleFunc($module, 'AddField', '__cvv2__',array('PayPal','DrawCVVField'),'','');
-		self::$cvvAdded = true;
 	}
 
 	/**
