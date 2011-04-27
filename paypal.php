@@ -110,7 +110,8 @@ class PayPal extends uBasicModule {
 		return '<a style="text-decoration:underline" href="javascript:openCVV()">CVV2?</a>';
 	}
 	public static function AddCVVField($module) {
-		CallModuleFunc($module, 'AddField', '__cvv2__',array('PayPal','DrawCVVField'),'','');
+		$obj = utopia::GetInstance($module);
+		$obj->AddField('__cvv2__',array('PayPal','DrawCVVField'),'','');
 	}
 
 	/**
