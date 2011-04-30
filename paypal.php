@@ -25,7 +25,6 @@ define('PAYPAL_TXN_TYPE_web_accept','web_accept');
 class PayPal extends uBasicModule {
 	private static $env = PAYPAL_ENV_SANDBOX;
 	public function GetUUID() { return 'PayPal_IPN'; }
-	public function ParentLoad($parent) {}
 	
 	public function SetupParents() {
 		modOpts::AddOption('paypal','api_username','PayPal API Username');
