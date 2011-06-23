@@ -23,20 +23,19 @@ define('PAYPAL_TXN_TYPE_virtual_terminal','virtual_terminal');
 define('PAYPAL_TXN_TYPE_web_accept','web_accept');
 
 class PayPal extends uBasicModule {
-	private static $env = PAYPAL_ENV_SANDBOX;
 	public function GetUUID() { return 'PayPal_IPN'; }
 	
 	public function SetupParents() {
 		modOpts::AddOption('paypal','api_username','PayPal API Username');
 		modOpts::AddOption('paypal','api_password','PayPal API Password');
 		modOpts::AddOption('paypal','api_signature','PayPal API Signature');
+		modOpts::AddOption('paypal','api_environment','PayPal Environment',PAYPAL_ENV_SANDBOX,itCOMBO,array(PAYPAL_ENV_LIVE,PAYPAL_ENV_SANDBOX,PAYPAL_ENV_BETA_SANDBOX));
 		$this->SetRewrite(true);
 	}
 	
 	public function RunModule() {
 		utopia::CancelTemplate();
 		// IPN Received
-		PayPal::SetEnvironment(PAYPAL_ENV_LIVE);
 
 		// Read the post from PayPal and add 'cmd' 
 		$req = 'cmd=_notify-validate';
@@ -49,11 +48,12 @@ class PayPal extends uBasicModule {
 		// Post back to PayPal to validate 
 		$header = "POST /cgi-bin/webscr HTTP/1.0\r\n"; 
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n"; 
-		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n"; 
-		$env = self::$env ? '.'.self::$env : '';
-		$fp = fsockopen ('ssl://www'.$env.'.paypal.com', 443, $errno, $errstr, 30); 
-		 
-		 
+		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
+		$env = modOpts::GetOption('paypal','api_environment');
+		$envUrl = $env ? '.'.$env : '';
+		$fp = fsockopen ('ssl://www'.$envUrl.'.paypal.com', 443, $errno, $errstr, 30); 
+
+
 		// Process validation from PayPal 
 		// TODO: This sample does not test the HTTP response code. All 
 		// HTTP response codes must be handles or you should use an HTTP 
@@ -266,8 +266,9 @@ class PayPal extends uBasicModule {
 
 	public static function GetExpressCheckoutUrl($checkoutReply) {
 		if (self::HasError($checkoutReply)) return FALSE;
-		$env = self::$env ? '.'.self::$env : '';
-		return 'https://www'.$env.'.paypal.com/webscr'.
+		$env = modOpts::GetOption('paypal','api_environment');
+		$envUrl = $env ? '.'.$env : '';
+		return 'https://www'.$envUrl.'.paypal.com/webscr'.
 			'?cmd=_express-checkout&token='.$checkoutReply['TOKEN'].
 			'&AMT=amount'.
 			'&CURRENCYCODE=currencyID'.
@@ -286,24 +287,19 @@ class PayPal extends uBasicModule {
 		return self::PPHttpPost('DoExpressCheckoutPayment',$arr);
 	}
 
-	public static function SetEnvironment($env) {
-		self::$env = $env;
-	}
 	private static function PPHttpPost($methodName_, $nvpArray_) {
 		// Set up your API credentials, PayPal end point, and API version.
-		$env = self::$env ? '.'.self::$env : '';
-		$API_Endpoint = "https://api-3t$env.paypal.com/nvp";
+		$env = modOpts::GetOption('paypal','api_environment');
+		$envUrl = $env ? '.'.$env : '';
+		$API_Endpoint = 'https://api-3t'.$envUrl.'.paypal.com/nvp";
 		$API_UserName = urlencode('sdk-three_api1.sdk.com');
 		$API_Password = urlencode('QFZCWN5HZM8VBG7Q');
 		$API_Signature = urlencode('A.d9eRKfd1yVkRrtmMfCFLTqa6M9AyodL0SJkhYztxUi8W9pCXF6.4NI');
 
-		if (self::$env == PAYPAL_ENV_LIVE) {
+		if ($env == PAYPAL_ENV_LIVE) {
 			$API_UserName = modOpts::GetOption('paypal','api_username');
 			$API_Password = modOpts::GetOption('paypal','api_password');
 			$API_Signature = modOpts::GetOption('paypal','api_signature');
-	//		$API_UserName = urlencode('tom.kay_api1.top4trade.com'); //sdk-three_api1.sdk.com
-	//		$API_Password = urlencode('U5FLDG8ENFU2CHLK'); //QFZCWN5HZM8VBG7Q
-	//		$API_Signature = urlencode('AxCVSLJ-RRrrKNq7O9O1NR8SQ7y2AejEloYtuFGFH0zJqrSWZPkJof.k'); //A.d9eRKfd1yVkRrtmMfCFLTqa6M9AyodL0SJkhYztxUi8W9pCXF6.4NI
 		}
 
 		$version = urlencode('51.0');
