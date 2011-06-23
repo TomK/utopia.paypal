@@ -29,7 +29,7 @@ class PayPal extends uBasicModule {
 		modOpts::AddOption('paypal','api_username','PayPal API Username');
 		modOpts::AddOption('paypal','api_password','PayPal API Password');
 		modOpts::AddOption('paypal','api_signature','PayPal API Signature');
-		modOpts::AddOption('paypal','api_environment','PayPal Environment',PAYPAL_ENV_SANDBOX,itCOMBO,array(PAYPAL_ENV_LIVE,PAYPAL_ENV_SANDBOX,PAYPAL_ENV_BETA_SANDBOX));
+		modOpts::AddOption('paypal','api_environment','PayPal Environment',PAYPAL_ENV_SANDBOX,itCOMBO,array('Live'=>PAYPAL_ENV_LIVE,'Sandbox'=>PAYPAL_ENV_SANDBOX,'Beta Sandbox'=>PAYPAL_ENV_BETA_SANDBOX));
 		$this->SetRewrite(true);
 	}
 	
@@ -291,7 +291,7 @@ class PayPal extends uBasicModule {
 		// Set up your API credentials, PayPal end point, and API version.
 		$env = modOpts::GetOption('paypal','api_environment');
 		$envUrl = $env ? '.'.$env : '';
-		$API_Endpoint = 'https://api-3t'.$envUrl.'.paypal.com/nvp";
+		$API_Endpoint = 'https://api-3t'.$envUrl.'.paypal.com/nvp';
 		$API_UserName = urlencode('sdk-three_api1.sdk.com');
 		$API_Password = urlencode('QFZCWN5HZM8VBG7Q');
 		$API_Signature = urlencode('A.d9eRKfd1yVkRrtmMfCFLTqa6M9AyodL0SJkhYztxUi8W9pCXF6.4NI');
