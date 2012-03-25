@@ -26,10 +26,10 @@ class PayPal extends uBasicModule {
 	public function GetUUID() { return 'PayPal_IPN'; }
 	
 	public function SetupParents() {
-		modOpts::AddOption('paypal','api_username','PayPal API Username');
-		modOpts::AddOption('paypal','api_password','PayPal API Password');
-		modOpts::AddOption('paypal','api_signature','PayPal API Signature');
-		modOpts::AddOption('paypal','api_environment','PayPal Environment',PAYPAL_ENV_SANDBOX,itCOMBO,array('Live'=>PAYPAL_ENV_LIVE,'Sandbox'=>PAYPAL_ENV_SANDBOX,'Beta Sandbox'=>PAYPAL_ENV_BETA_SANDBOX));
+		modOpts::AddOption('paypal_api_username','API Username','PayPal');
+		modOpts::AddOption('paypal_api_password','API Password','Paypal');
+		modOpts::AddOption('paypal_api_signature','API Signature','PayPal');
+		modOpts::AddOption('paypal_api_environment','Environment','PayPal',PAYPAL_ENV_SANDBOX,itCOMBO,array('Live'=>PAYPAL_ENV_LIVE,'Sandbox'=>PAYPAL_ENV_SANDBOX,'Beta Sandbox'=>PAYPAL_ENV_BETA_SANDBOX));
 		$this->SetRewrite(true);
 	}
 	
@@ -49,7 +49,7 @@ class PayPal extends uBasicModule {
 		$header = "POST /cgi-bin/webscr HTTP/1.0\r\n"; 
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n"; 
 		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
-		$env = modOpts::GetOption('paypal','api_environment');
+		$env = modOpts::GetOption('paypal_api_environment');
 		$envUrl = $env ? '.'.$env : '';
 		$fp = fsockopen ('ssl://www'.$envUrl.'.paypal.com', 443, $errno, $errstr, 30); 
 
@@ -266,7 +266,7 @@ class PayPal extends uBasicModule {
 
 	public static function GetExpressCheckoutUrl($checkoutReply) {
 		if (self::HasError($checkoutReply)) return FALSE;
-		$env = modOpts::GetOption('paypal','api_environment');
+		$env = modOpts::GetOption('paypal_api_environment');
 		$envUrl = $env ? '.'.$env : '';
 		return 'https://www'.$envUrl.'.paypal.com/webscr'.
 			'?cmd=_express-checkout&token='.$checkoutReply['TOKEN'].
@@ -289,7 +289,7 @@ class PayPal extends uBasicModule {
 
 	private static function PPHttpPost($methodName_, $nvpArray_) {
 		// Set up your API credentials, PayPal end point, and API version.
-		$env = modOpts::GetOption('paypal','api_environment');
+		$env = modOpts::GetOption('paypal_api_environment');
 		$envUrl = $env ? '.'.$env : '';
 		$API_Endpoint = 'https://api-3t'.$envUrl.'.paypal.com/nvp';
 		$API_UserName = urlencode('sdk-three_api1.sdk.com');
@@ -297,9 +297,9 @@ class PayPal extends uBasicModule {
 		$API_Signature = urlencode('A.d9eRKfd1yVkRrtmMfCFLTqa6M9AyodL0SJkhYztxUi8W9pCXF6.4NI');
 
 		if ($env == PAYPAL_ENV_LIVE) {
-			$API_UserName = modOpts::GetOption('paypal','api_username');
-			$API_Password = modOpts::GetOption('paypal','api_password');
-			$API_Signature = modOpts::GetOption('paypal','api_signature');
+			$API_UserName = modOpts::GetOption('paypal_api_username');
+			$API_Password = modOpts::GetOption('paypal_api_password');
+			$API_Signature = modOpts::GetOption('paypal_api_signature');
 		}
 
 		$version = urlencode('51.0');
