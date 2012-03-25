@@ -27,7 +27,7 @@ class PayPal extends uBasicModule {
 	
 	public function SetupParents() {
 		modOpts::AddOption('paypal_api_username','API Username','PayPal');
-		modOpts::AddOption('paypal_api_password','API Password','Paypal');
+		modOpts::AddOption('paypal_api_password','API Password','PayPal');
 		modOpts::AddOption('paypal_api_signature','API Signature','PayPal');
 		modOpts::AddOption('paypal_api_environment','Environment','PayPal',PAYPAL_ENV_SANDBOX,itCOMBO,array('Live'=>PAYPAL_ENV_LIVE,'Sandbox'=>PAYPAL_ENV_SANDBOX,'Beta Sandbox'=>PAYPAL_ENV_BETA_SANDBOX));
 		$this->SetRewrite(true);
