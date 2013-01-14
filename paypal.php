@@ -23,7 +23,7 @@ define('PAYPAL_TXN_TYPE_virtual_terminal','virtual_terminal');
 define('PAYPAL_TXN_TYPE_web_accept','web_accept');
 
 class PayPal extends uBasicModule {
-	public function GetUUID() { return 'PayPal_IPN'; }
+	public static $uuid = 'PayPal_IPN';
 	
 	public function SetupParents() {
 		modOpts::AddOption('paypal_api_username','API Username','PayPal');
